@@ -8,16 +8,17 @@ export class SESSender {
     this._to = to;
     this._from = from;
   }
+
   /**
    * メールを送信する
    * @param dataURL
    */
   public async send(dataURL: string) {
     const ses = new AWS.SES();
-    const data = await ses
-      .sendEmail(this.getParam(this._from, this._to, dataURL))
-      .promise();
-    console.log("Email sent! Message ID: ", data.MessageId);
+    const promises = this._to.map((to) => {
+      return ses.sendEmail(this.getParam(this._from, to, dataURL)).promise();
+    });
+    return Promise.all(promises);
   }
 
   /**
@@ -55,12 +56,12 @@ export class SESSender {
    * @param to
    * @param dataURL
    */
-  private getParam(from: string, to: string[], dataURL: string) {
+  private getParam(from: string, to: string, dataURL: string) {
     const charset = "UTF-8";
     return {
       Source: from,
       Destination: {
-        ToAddresses: to, //TODO メール配信のため、toアドレス列挙は禁止。配信回数分アドレスを変更する。
+        ToAddresses: [to],
       },
       Message: {
         Subject: {
