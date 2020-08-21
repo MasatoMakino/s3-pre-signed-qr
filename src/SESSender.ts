@@ -1,16 +1,21 @@
 import AWS from "aws-sdk";
 
 export class SESSender {
+  private _to: string[];
+  private _from: string;
+
+  constructor(from: string, to: string[]) {
+    this._to = to;
+    this._from = from;
+  }
   /**
    * メールを送信する
-   * @param from
-   * @param to
    * @param dataURL
    */
-  static async send(from: string, to: string[], dataURL: string) {
+  public async send(dataURL: string) {
     const ses = new AWS.SES();
     const data = await ses
-      .sendEmail(this.getParam(from, to, dataURL))
+      .sendEmail(this.getParam(this._from, this._to, dataURL))
       .promise();
     console.log("Email sent! Message ID: ", data.MessageId);
   }
@@ -21,7 +26,7 @@ export class SESSender {
    *
    * @param dataURL
    */
-  public static getHTML = (dataURL: string): string => {
+  public getHTML = (dataURL: string): string => {
     return `<html>
 <head></head>
 <body>
@@ -38,16 +43,20 @@ export class SESSender {
   };
 
   /**
-   *
+   * タイトルテンプレート取得関数
+   */
+  public getSubject = (): string => {
+    return "Amazon SES Test (AWS SDK for JavaScript in Node.js)";
+  };
+
+  /**
+   * メール用パラメーターを生成する
    * @param from
    * @param to
    * @param dataURL
    */
-  static getParam(from: string, to: string[], dataURL: string) {
-    const subject = "Amazon SES Test (AWS SDK for JavaScript in Node.js)";
+  private getParam(from: string, to: string[], dataURL: string) {
     const charset = "UTF-8";
-
-    // Specify the parameters to pass to the API.
     return {
       Source: from,
       Destination: {
@@ -55,7 +64,7 @@ export class SESSender {
       },
       Message: {
         Subject: {
-          Data: subject,
+          Data: this.getSubject(),
           Charset: charset,
         },
         Body: {

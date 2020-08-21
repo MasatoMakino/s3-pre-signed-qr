@@ -11,8 +11,7 @@ export class S3PreSignedQR {
     profile: string;
     bucketName: string;
     objectKey: string;
-    from: string;
-    to: string[];
+    sender: SESSender;
   }) {
     const s3 = this.initS3(option.profile);
 
@@ -27,7 +26,7 @@ export class S3PreSignedQR {
     const qrKey = await QREncoder.putBuffer(s3, option.bucketName, buffer);
     const qrSignedURL = await urlGenerator.generateURL(qrKey);
 
-    SESSender.send(option.from, option.to, qrSignedURL);
+    option.sender.send(qrSignedURL);
   }
 
   /**
