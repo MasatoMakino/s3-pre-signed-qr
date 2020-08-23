@@ -6,18 +6,26 @@ import { PreSignURLGenerator } from "./PreSignURLGenerator";
 import { QREncoder } from "./QREncoder";
 import { SESSender } from "./SESSender";
 
+export interface S3PreSignedQROption {
+  profile: string;
+  bucketName: string;
+  objectKey: string;
+  sender: SESSender;
+  /**
+   * QRおよびターゲットファイルの有効期限、単位秒。
+   * 最大値は実行環境によって左右される。
+   * @see https://aws.amazon.com/jp/premiumsupport/knowledge-center/presigned-url-s3-bucket-expiration/
+   */
+  Expires?: number;
+}
 export class S3PreSignedQR {
-  public static async send(option: {
-    profile: string;
-    bucketName: string;
-    objectKey: string;
-    sender: SESSender;
-  }) {
+  public static async send(option: S3PreSignedQROption) {
     const s3 = this.initS3(option.profile);
 
     const urlGenerator: PreSignURLGenerator = new PreSignURLGenerator(
       s3,
-      option.bucketName
+      option.bucketName,
+      option.Expires
     );
     const preSignedURL = await urlGenerator.generateURL(option.objectKey);
 
