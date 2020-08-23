@@ -6,6 +6,33 @@
 
 Configure your credentials with [AWS SDK documents](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/getting-started-nodejs.html#getting-started-nodejs-credentials).
 
+#### Permissions Required
+
+IAM users using this module must have the following permissions.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["ses:SendEmail"],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:DeleteObject"
+      ],
+      "Resource": ["arn:aws:s3:::<Bucket-Name>/*", "arn:aws:s3:::<Bucket-Name>"]
+    }
+  ]
+}
+```
+
 ### install
 
 ```bash
