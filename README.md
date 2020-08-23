@@ -33,6 +33,27 @@ IAM users using this module must have the following permissions.
 }
 ```
 
+#### Testing to get Credentials
+
+Set a script file `CredentialTest.js` in the project root.
+
+```js
+const AWS = require("aws-sdk");
+const credentials = new AWS.SharedIniFileCredentials({
+  profile: profileName,
+});
+AWS.config.credentials = credentials;
+console.log("Access key:", AWS.config.credentials.accessKeyId);
+```
+
+and Run test script.
+
+```zsh
+env AWS_SDK_LOAD_CONFIG=true node CredentialTest.js
+```
+
+If the console outputs an access key, you're ready to go.
+
 ### install
 
 ```bash
