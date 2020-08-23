@@ -64,10 +64,10 @@ npm install https://github.com/MasatoMakino/s3-pre-signed-qr.git --save-dev
 
 ```js
 const s3qr = require("s3-pre-signed-qr");
-const sender = new s3qr.SESSender("from@example.com", [
-  "to01@example.com",
-  "to02@example.com",
-]);
+const sender = new s3qr.SESSender({
+  from: "from@example.com",
+  to: ["to01@example.com", "to02@example.com"],
+});
 s3qr.S3PreSignedQR.send({
   profile: "your-profile-name-in-credentials",
   bucketName: "your-s3-bucket-name",

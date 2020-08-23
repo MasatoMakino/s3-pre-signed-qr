@@ -18,6 +18,10 @@ export interface S3PreSignedQROption {
    */
   Expires?: number;
 }
+
+/**
+ * 指定されたオブジェクトから署名付きURLを発行、QRコード化してEメールで送信する。
+ */
 export class S3PreSignedQR {
   public static async send(option: S3PreSignedQROption) {
     const s3 = this.initS3(option.profile);

@@ -1,12 +1,24 @@
 import AWS from "aws-sdk";
 
+export interface SESSenderOption {
+  from: string;
+  to: string[];
+  /**
+   * 返信先アドレス 未指定の場合はfromアドレスが使用される
+   * @see https://docs.aws.amazon.com/ja_jp/sdk-for-javascript/v2/developer-guide/ses-examples-sending-email.html#ses-examples-sendmail
+   */
+  ReplyToAddresses?: string[];
+}
+
 export class SESSender {
   private _to: string[];
   private _from: string;
+  private _replayTo: string[];
 
-  constructor(from: string, to: string[]) {
-    this._to = to;
-    this._from = from;
+  constructor(option: SESSenderOption) {
+    this._to = option.to;
+    this._from = option.from;
+    this._replayTo = option.ReplyToAddresses;
   }
 
   /**
@@ -16,7 +28,9 @@ export class SESSender {
   public async send(dataURL: string) {
     const ses = new AWS.SES();
     const promises = this._to.map((to) => {
-      return ses.sendEmail(this.getParam(this._from, to, dataURL)).promise();
+      return ses
+        .sendEmail(this.getParam(this._from, to, dataURL, this._replayTo))
+        .promise();
     });
     return Promise.all(promises);
   }
@@ -55,10 +69,16 @@ export class SESSender {
    * @param from
    * @param to
    * @param dataURL
+   * @param replayTo
    */
-  private getParam(from: string, to: string, dataURL: string) {
+  private getParam(
+    from: string,
+    to: string,
+    dataURL: string,
+    replayTo?: string[]
+  ): AWS.SES.Types.SendEmailRequest {
     const charset = "UTF-8";
-    return {
+    const param: AWS.SES.Types.SendEmailRequest = {
       Source: from,
       Destination: {
         ToAddresses: [to],
@@ -76,5 +96,9 @@ export class SESSender {
         },
       },
     };
+
+    param.ReplyToAddresses = replayTo ?? param.ReplyToAddresses;
+
+    return param;
   }
 }
