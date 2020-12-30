@@ -1,5 +1,8 @@
 # s3-pre-signed-qr
 
+**This repository has been archived.**
+Please refer to this [issue](https://github.com/MasatoMakino/s3-pre-signed-qr/issues/6).
+
 ## Getting started
 
 ### Configure Your Credentials
